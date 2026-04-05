@@ -1,0 +1,37 @@
+{
+  "name": "smooth_sweep",
+  "mat_path": "data/nyu_depth_v2/nyu_depth_v2_labeled.mat",
+  "num_samples": 20,
+  "sparse_density": 0.3,
+  "seed": 42,
+  "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+  "out_dir": "./outputs/experiments",
+  "methods": {
+    "global": {
+      "type": "global"
+    },
+    "local_no_smooth": {
+      "type": "local",
+      "n_segments": 200,
+      "smooth": false
+    },
+    "local_sigma5": {
+      "type": "local",
+      "n_segments": 200,
+      "smooth": true,
+      "sigma": 5.0
+    },
+    "local_sigma15": {
+      "type": "local",
+      "n_segments": 200,
+      "smooth": true,
+      "sigma": 15.0
+    },
+    "local_sigma30": {
+      "type": "local",
+      "n_segments": 200,
+      "smooth": true,
+      "sigma": 30.0
+    }
+  }
+}

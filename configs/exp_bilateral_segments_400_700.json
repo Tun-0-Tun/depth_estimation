@@ -1,0 +1,50 @@
+{
+  "name": "bilateral_segments_400_700_nyu20",
+  "mat_path": "data/nyu_depth_v2/nyu_depth_v2_labeled.mat",
+  "num_samples": 20,
+  "sparse_density": 0.3,
+  "seed": 42,
+  "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+  "out_dir": "./outputs/experiments",
+  "methods": {
+    "global": {
+      "type": "global"
+    },
+    "bilat_n400": {
+      "type": "local",
+      "n_segments": 400,
+      "smooth_mode": "bilateral",
+      "sigma_spatial": 6.0,
+      "range_scale": 0.25,
+      "bilateral_max_radius": 10,
+      "min_pixels": 10
+    },
+    "bilat_n500": {
+      "type": "local",
+      "n_segments": 500,
+      "smooth_mode": "bilateral",
+      "sigma_spatial": 6.0,
+      "range_scale": 0.25,
+      "bilateral_max_radius": 10,
+      "min_pixels": 10
+    },
+    "bilat_n600": {
+      "type": "local",
+      "n_segments": 600,
+      "smooth_mode": "bilateral",
+      "sigma_spatial": 6.0,
+      "range_scale": 0.25,
+      "bilateral_max_radius": 10,
+      "min_pixels": 10
+    },
+    "bilat_n700": {
+      "type": "local",
+      "n_segments": 700,
+      "smooth_mode": "bilateral",
+      "sigma_spatial": 6.0,
+      "range_scale": 0.25,
+      "bilateral_max_radius": 10,
+      "min_pixels": 10
+    }
+  }
+}

@@ -1,0 +1,39 @@
+# Environment
+.venv/
+venv/
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Tools
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Project artifacts (regenerate locally)
+outputs/
+data/
+
+# Vendored upstream clone (we use Hugging Face models; optional local checkout)
+Depth-Anything-V2/
+
+# Jupyter
+.ipynb_checkpoints/

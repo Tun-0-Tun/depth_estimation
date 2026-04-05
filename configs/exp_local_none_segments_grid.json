@@ -1,0 +1,50 @@
+{
+  "name": "local_none_segments_grid_nyu20",
+  "mat_path": "data/nyu_depth_v2/nyu_depth_v2_labeled.mat",
+  "num_samples": 20,
+  "sparse_density": 0.3,
+  "seed": 42,
+  "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+  "out_dir": "./outputs/experiments",
+  "methods": {
+    "global": {
+      "type": "global"
+    },
+    "local_n50": {
+      "type": "local",
+      "n_segments": 50,
+      "smooth_mode": "none",
+      "min_pixels": 10
+    },
+    "local_n100": {
+      "type": "local",
+      "n_segments": 100,
+      "smooth_mode": "none",
+      "min_pixels": 10
+    },
+    "local_n150": {
+      "type": "local",
+      "n_segments": 150,
+      "smooth_mode": "none",
+      "min_pixels": 10
+    },
+    "local_n200": {
+      "type": "local",
+      "n_segments": 200,
+      "smooth_mode": "none",
+      "min_pixels": 10
+    },
+    "local_n300": {
+      "type": "local",
+      "n_segments": 300,
+      "smooth_mode": "none",
+      "min_pixels": 10
+    },
+    "local_n400": {
+      "type": "local",
+      "n_segments": 400,
+      "smooth_mode": "none",
+      "min_pixels": 10
+    }
+  }
+}

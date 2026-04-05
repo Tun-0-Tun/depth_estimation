@@ -1,0 +1,15 @@
+# Full install: uv sync   or   pip install -e .
+# This file mirrors pyproject.toml for plain `pip install -r requirements.txt`.
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.36.0
+accelerate>=0.25.0
+datasets>=2.16.0
+huggingface_hub>=0.20.0
+numpy>=1.24.0
+Pillow>=10.0.0
+scipy>=1.11.0
+h5py>=3.8.0
+tqdm>=4.66.0
+scikit-image>=0.21.0
+matplotlib>=3.8.0
