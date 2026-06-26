@@ -15,9 +15,12 @@ dependencies = [
     "Pillow>=10.0.0",
     "scipy>=1.11.0",
     "h5py>=3.8.0",
+    "pandas>=2.0.0",
+    "pyarrow>=14.0.0",
     "tqdm>=4.66.0",
     "scikit-image>=0.21.0",
     "matplotlib>=3.8.0",
+    "opencv-python-headless>=4.8.0",
 ]
 
 [project.optional-dependencies]

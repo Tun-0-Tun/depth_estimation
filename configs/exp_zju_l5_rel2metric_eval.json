@@ -1,0 +1,48 @@
+{
+  "name": "zju_l5_rel2metric_eval",
+  "dataset": "zju_l5",
+  "zju_l5_root": "data/ZJUL5",
+  "zju_l5_manifest": "data.json",
+  "zju_l5_split": "test",
+  "prior_source": "l5_zones",
+  "num_samples": 100,
+  "sparse_density": 1.0,
+  "seed": 42,
+  "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+  "out_dir": "./outputs/experiments",
+  "show_prediction_diff": true,
+  "methods": {
+    "rel2metric_tta": {
+      "type": "rel2metric_tta",
+      "checkpoint": "outputs/rel2metric/rel2metric_mixed.pt",
+      "tta_steps": 40,
+      "tta_lr": 1e-4,
+      "tta_smooth_lambda": 0.05,
+      "output_refine_mode": "guided",
+      "output_refine_radius": 8,
+      "output_refine_eps": 0.001
+    },
+    "rel2metric_no_tta": {
+      "type": "rel2metric_tta",
+      "checkpoint": "outputs/rel2metric/rel2metric_mixed.pt",
+      "tta_steps": 0,
+      "output_refine_mode": "guided"
+    },
+    "direct_depth_cnn": {
+      "type": "direct_depth_cnn",
+      "hidden_dim": 64,
+      "num_layers": 8,
+      "train_steps": 800,
+      "output_refine_mode": "guided"
+    },
+    "local_bilateral": {
+      "type": "local",
+      "n_segments": 200,
+      "smooth_mode": "bilateral",
+      "sigma_spatial": 5.0,
+      "range_scale": 0.25,
+      "bilateral_max_radius": 10,
+      "min_pixels": 10
+    }
+  }
+}

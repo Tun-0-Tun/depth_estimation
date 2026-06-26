@@ -13,6 +13,9 @@ Two modes of operation:
        --methods global local \\
        --num-samples 20 \\
        --name quick_test
+
+3. Single table for global, local bilateral, and inr_film (see also ``print_metrics_table.py``)::
+   python scripts/run_experiment.py --config configs/metrics_three_approaches.json
 """
 
 import argparse

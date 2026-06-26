@@ -1,0 +1,28 @@
+{
+  "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+  "device": null,
+  "seed": 42,
+  "epochs": 20,
+  "lr": 3e-4,
+  "hidden": 64,
+  "num_layers": 10,
+  "grad_accum": 4,
+  "anchor_lambda": 1.0,
+  "smooth_lambda": 0.05,
+  "max_per_dataset": null,
+  "val_per_dataset": 40,
+  "drel_cache_dir": "outputs/rel2metric/drel_cache",
+  "out_path": "outputs/rel2metric/rel2metric_mixed.pt",
+  "prior_noise": {
+    "relative_std": 0.02,
+    "absolute_std_m": 0.02,
+    "outlier_fraction": 0.02,
+    "outlier_amp_m": 0.5
+  },
+  "datasets": {
+    "nyu_mat": "data/nyu_depth_v2/nyu_depth_v2_labeled.mat",
+    "kitti_root": "data/kitti_raw_depth",
+    "zju_l5_root": "data/ZJUL5",
+    "zju_l5_manifest": "data.json"
+  }
+}

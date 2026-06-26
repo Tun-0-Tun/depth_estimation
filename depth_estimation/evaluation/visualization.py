@@ -81,6 +81,7 @@ def make_comparison_figure(
     title: str | None = None,
     figscale: float = 4.0,
     show_prediction_diff: bool = True,
+    column_titles: dict[str, str] | None = None,
 ) -> plt.Figure:
     """
     Build a comparison figure with adaptive number of columns.
@@ -100,6 +101,8 @@ def make_comparison_figure(
         title: optional figure suptitle.
         figscale: width per column in inches.
         show_prediction_diff: add row of pred − GT error maps.
+        column_titles: optional map ``prediction_key -> short title`` for method columns
+            (and matching Δ labels). Keys not listed keep the prediction dict key.
     """
     from skimage.segmentation import mark_boundaries
 
@@ -162,12 +165,18 @@ def make_comparison_figure(
             ax_at(1, col).axis("off")
         col += 1
 
+    def _col_title(key: str) -> str:
+        if column_titles and key in column_titles:
+            return str(column_titles[key])
+        return key
+
     # Method predictions + error row
     for name in method_names:
         pred = predictions[name]
         filled = _fill_pred(pred, vmin, vmax, gt_valid)
         im = ax_at(0, col).imshow(filled, cmap="magma", vmin=vmin, vmax=vmax)
-        ax_at(0, col).set_title(name)
+        disp = _col_title(name)
+        ax_at(0, col).set_title(disp)
         ax_at(0, col).axis("off")
         fig.colorbar(im, ax=ax_at(0, col), fraction=0.046, pad=0.04).set_label("Depth (m)")
 
@@ -175,7 +184,7 @@ def make_comparison_figure(
             im_e = ax_at(1, col).imshow(
                 diffs[name], cmap="coolwarm", vmin=-err_lim, vmax=err_lim
             )
-            ax_at(1, col).set_title(f"Δ {name}\n(pred−GT, m)", fontsize=8)
+            ax_at(1, col).set_title(f"Δ {disp}\n(pred−GT, m)", fontsize=8)
             ax_at(1, col).axis("off")
             fig.colorbar(
                 im_e, ax=ax_at(1, col), fraction=0.046, pad=0.04
