@@ -14,16 +14,21 @@ cd depth_estimation
 git checkout feature/rel2metric-cross-domain      # branch with the new model
 
 # creates .venv and installs the locked deps + this project (editable)
-uv sync                       # CPU/auto
-uv sync --torch-backend=auto  # on a CUDA box: picks the right torch wheel automatically
+uv sync
+uv run python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-`uv sync --locked` enforces the exact lockfile (fails if pyproject and lock drift).
-If `--torch-backend=auto` is unavailable in your uv version, after a plain `uv sync` do:
+On Linux the default PyPI torch wheel already bundles CUDA, so plain `uv sync` is
+usually enough — the check above should print `True`. If it prints `False` (CPU-only
+wheel), install the CUDA build matching the server's driver (`nvidia-smi`):
 
 ```bash
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 ```
+
+Newer uv versions can pick the wheel automatically with `uv sync --torch-backend=auto`
+(update uv via `uv self update` if the flag is unknown). `uv sync --locked` enforces
+the exact lockfile.
 
 Run any command inside the env with `uv run …` (used below). The Depth-Anything-V2
 backbone is fetched from Hugging Face on first run (set `HF_HOME` to a large disk).
