@@ -3,35 +3,41 @@
 End-to-end recipe to train the amortized **rel→metric** projection on a GPU server
 and evaluate it on ZJU-L5 against the existing baselines.
 
-## 1. Clone + environment
+## 1. Clone + environment (uv)
+
+The project ships a `uv.lock`, so [uv](https://docs.astral.sh/uv/) is the recommended
+way to set up a reproducible environment:
 
 ```bash
 git clone https://github.com/Tun-0-Tun/depth_estimation.git
 cd depth_estimation
 git checkout feature/rel2metric-cross-domain      # branch with the new model
 
-python -m venv .venv && source .venv/bin/activate
-pip install -U pip
-pip install -e .            # installs deps from pyproject (torch, transformers, h5py, pandas, pyarrow, ...)
+# creates .venv and installs the locked deps + this project (editable)
+uv sync                       # CPU/auto
+uv sync --torch-backend=auto  # on a CUDA box: picks the right torch wheel automatically
 ```
 
-On a CUDA box install the matching PyTorch build first if `pip install -e .` pulls a
-CPU-only wheel, e.g.:
+`uv sync --locked` enforces the exact lockfile (fails if pyproject and lock drift).
+If `--torch-backend=auto` is unavailable in your uv version, after a plain `uv sync` do:
 
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 ```
 
-The Depth-Anything-V2 backbone is fetched automatically from Hugging Face on first
-run (set `HF_HOME` to a large disk if needed).
+Run any command inside the env with `uv run …` (used below). The Depth-Anything-V2
+backbone is fetched from Hugging Face on first run (set `HF_HOME` to a large disk).
+
+> Plain venv also works: `python -m venv .venv && source .venv/bin/activate && pip install -e .`.
+> With uv, prefix the commands in the next sections with `uv run` (e.g. `uv run python …`).
 
 ## 2. Download the datasets
 
 All datasets live under `data/` (git-ignored). NYU and KITTI download automatically:
 
 ```bash
-python scripts/download_data.py --all          # NYU (~2.8 GB) + KITTI raw-depth (~0.5 GB)
-python scripts/download_data.py --zju-info      # prints ZJU-L5 instructions
+uv run python scripts/download_data.py --all          # NYU (~2.8 GB) + KITTI raw-depth (~0.5 GB)
+uv run python scripts/download_data.py --zju-info      # prints ZJU-L5 instructions
 ```
 
 | Dataset | How | Size | Used for |
@@ -56,7 +62,7 @@ data/
 Sanity check:
 
 ```bash
-python -c "from depth_estimation.data.unified import build_samples as B; \
+uv run python -c "from depth_estimation.data.unified import build_samples as B; \
 print({s:len(B({'nyu_mat':'data/nyu_depth_v2/nyu_depth_v2_labeled.mat',\
 'kitti_root':'data/kitti_raw_depth','zju_l5_root':'data/ZJUL5'}, s)) for s in ['train','val']})"
 ```
@@ -64,7 +70,7 @@ print({s:len(B({'nyu_mat':'data/nyu_depth_v2/nyu_depth_v2_labeled.mat',\
 ## 3. Train (amortized pretraining on the mix)
 
 ```bash
-python scripts/train_rel2metric.py --config configs/train_rel2metric_mixed.json
+uv run python scripts/train_rel2metric.py --config configs/train_rel2metric_mixed.json
 ```
 
 - Trains `RelToMetricCNN` on NYU + KITTI + ZJU-L5 with **randomized sparse priors**
@@ -86,7 +92,7 @@ Key config knobs (`configs/train_rel2metric_mixed.json`):
 ## 4. Evaluate on ZJU-L5 (vs baselines)
 
 ```bash
-python scripts/run_experiment.py --config configs/exp_zju_l5_rel2metric_eval.json
+uv run python scripts/run_experiment.py --config configs/exp_zju_l5_rel2metric_eval.json
 ```
 
 Runs `rel2metric_tta` (with per-image test-time adaptation), `rel2metric_no_tta`,
