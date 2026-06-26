@@ -28,9 +28,10 @@ htmlcov/
 *.swp
 .DS_Store
 
-# Project artifacts (regenerate locally)
-outputs/
-data/
+# Project artifacts (regenerate locally) — anchored to repo root so they don't
+# also ignore the package module `depth_estimation/data/`.
+/outputs/
+/data/
 
 # Vendored upstream clone (we use Hugging Face models; optional local checkout)
 Depth-Anything-V2/
