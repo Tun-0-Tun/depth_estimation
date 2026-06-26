@@ -1,0 +1,98 @@
+\ProvidesPackage{example}
+
+%% Определение геометрии документа
+\usepackage[a4paper,
+            bindingoffset=15mm,
+            left=15mm,
+            right=15mm,
+            top=20mm,
+            bottom=20mm,
+            footskip=0.3in]{geometry}
+
+%% Подключение графики
+\usepackage{graphicx}
+\graphicspath{{img/}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+%% Подключение пакетов для переноса слов и русских заголовков
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+\addto\captionsrussian{\renewcommand{\contentsname}{Оглавление}}
+
+%% Задание шрифтов по умолчанию — как в MS Word
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures={TeX}}
+\setmainfont{Times New Roman}
+\newfontfamily\cyrillicfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+
+%% Подключение пакета для задания полуторного интервала
+\usepackage{setspace}
+\setstretch{1.5}
+\setlength{\parindent}{1.25cm}
+
+%% Вывод отладочной информации — размер шрифта
+\newcommand\thefontsize{{\f@size pt}}
+
+%% Пользовательские размеры шрифтов
+\newcommand\fontxs{\fontsize{8}{10} \selectfont}
+\newcommand\fonts{\fontsize{10}{12.5} \selectfont}
+\newcommand\fontm{\fontsize{12}{15} \selectfont}
+\newcommand\fontl{\fontsize{16}{20} \selectfont}
+\newcommand\fontxl{\fontsize{20}{25} \selectfont}
+
+%% Определяем новые переменные
+\newcommand{\supervisor}[1]{\gdef\@supervisor{#1}}
+\newcommand{\worktype}[1]{\gdef\@worktype{#1}}
+\newcommand{\affiliation}[1]{\gdef\@affiliation{#1}}
+
+%% Титульный лист
+\renewcommand{\maketitle}{
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+\includegraphics[width=2.6in]{msu.png}\\
+Московский государственный университет имени М.В. Ломоносова\\
+Факультет вычислительной математики и кибернетики\\
+\@affiliation\\
+\vspace{2.75cm}
+{\fontl{\@author}}\\
+\vspace{1cm}
+{\fontxl\textbf{\@title}}\\
+\vspace{2cm}
+\@worktype\\
+\vspace{3cm}
+\begin{flushright}
+\textbf{Научный руководитель:}\\
+\@supervisor
+\end{flushright}
+\vspace{\fill}
+\@date
+\end{center}
+\clearpage}
+
+%% Оглавление
+\newcommand{\maketoc}{
+\clearpage
+\setcounter{tocdepth}{3} % Задание максимального уровня глубины включаемых в оглавление подразделов
+\tableofcontents
+\clearpage}
+
+%% Начинать каждый раздел с новой страницы
+\AddToHook{cmd/section/before}{\clearpage}
+
+%% Библиография + костыль
+\newcommand{\cyr}{}
+\newcommand{\CYRS}{С}
+\newcommand{\CYRT}{Т}
+\bibliographystyle{gost2008}
+
+%% Значения по умолчанию
+\affiliation{\mbox{}}
+\author{Фамилия Имя Отчество}
+\title{Без названия}
+\worktype{ТИП РАБОТЫ}
+\supervisor{звание, должность\\И.О.Фамилия}
+\date{Москва, (год)}
