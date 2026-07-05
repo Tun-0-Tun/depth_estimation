@@ -239,9 +239,11 @@ class Rel2MetricTTACalibration(CalibrationMethodBase):
 
     name: str = "rel2metric_tta"
     checkpoint: str = "outputs/rel2metric/rel2metric_mixed.pt"
-    tta_steps: int = 40
-    tta_lr: float = 1e-4
+    tta_steps: int = 150
+    tta_lr: float = 2e-3
     tta_smooth_lambda: float = 0.05
+    tta_prox_lambda: float = 0.1
+    tta_trim_frac: float = 0.1
     output_refine_mode: str = "guided"
     output_refine_radius: int = 8
     output_refine_eps: float = 1e-3
@@ -258,6 +260,8 @@ class Rel2MetricTTACalibration(CalibrationMethodBase):
             tta_steps=self.tta_steps,
             tta_lr=self.tta_lr,
             tta_smooth_lambda=self.tta_smooth_lambda,
+            tta_prox_lambda=self.tta_prox_lambda,
+            tta_trim_frac=self.tta_trim_frac,
             output_refine_mode=self.output_refine_mode,
             output_refine_radius=self.output_refine_radius,
             output_refine_eps=self.output_refine_eps,
