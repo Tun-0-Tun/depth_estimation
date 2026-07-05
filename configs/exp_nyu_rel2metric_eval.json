@@ -1,15 +1,19 @@
 {
-  "name": "zju_l5_rel2metric_eval",
-  "dataset": "zju_l5",
-  "zju_l5_root": "data/ZJUL5",
-  "zju_l5_manifest": "data.json",
-  "zju_l5_split": "test",
-  "prior_source": "l5_zones",
-  "num_samples": 100,
-  "sparse_density": 1.0,
+  "name": "nyu_rel2metric_eval",
+  "dataset": "nyu",
+  "mat_path": "data/nyu_depth_v2/nyu_depth_v2_labeled.mat",
   "seed": 42,
   "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
   "out_dir": "./outputs/experiments",
+  "prior_source": "grid_stride",
+  "prior_grid_stride": 20,
+  "prior_noise": {
+    "relative_std": 0.02,
+    "absolute_std_m": 0.02,
+    "outlier_fraction": 0.02,
+    "outlier_amp_m": 0.5
+  },
+  "frame_indices_file": "configs/metadata/nyu_heldout_val100.json",
   "show_prediction_diff": true,
   "methods": {
     "rel2metric_tta": {
@@ -28,13 +32,6 @@
       "type": "rel2metric_tta",
       "checkpoint": "outputs/rel2metric/rel2metric_mixed.pt",
       "tta_steps": 0,
-      "output_refine_mode": "guided"
-    },
-    "direct_depth_cnn": {
-      "type": "direct_depth_cnn",
-      "hidden_dim": 64,
-      "num_layers": 8,
-      "train_steps": 800,
       "output_refine_mode": "guided"
     },
     "local_bilateral": {

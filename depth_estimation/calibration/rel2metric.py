@@ -172,6 +172,18 @@ def supervised_loss(
     return ((pred_n - gt_n).abs() * valid).sum() / denom
 
 
+def _trimmed_anchor_loss(pred_n: torch.Tensor, x: Rel2MetricInputs, trim_frac: float) -> torch.Tensor:
+    """L1 over anchors, discarding the worst ``trim_frac`` residuals (robust to prior outliers).
+
+    ``trim_frac == 0`` reduces to plain L1 anchor loss over all anchor pixels.
+    """
+    r = (pred_n - x.sparse_n).abs()[x.mask_t.bool()]
+    if trim_frac and 0.0 < trim_frac < 1.0 and r.numel() > 10:
+        keep = max(1, int(r.numel() * (1.0 - trim_frac)))
+        r = torch.sort(r).values[:keep]
+    return r.mean()
+
+
 # ---------------------------------------------------------------------------
 # Inference entry point (registered method calls this)
 # ---------------------------------------------------------------------------
@@ -184,9 +196,11 @@ def calibrate_rel2metric_tta(
     rgb: np.ndarray,
     *,
     checkpoint: str,
-    tta_steps: int = 40,
-    tta_lr: float = 1e-4,
+    tta_steps: int = 150,
+    tta_lr: float = 2e-3,
     tta_smooth_lambda: float = 0.05,
+    tta_prox_lambda: float = 0.1,
+    tta_trim_frac: float = 0.1,
     output_refine_mode: str = "guided",
     output_refine_radius: int = 8,
     output_refine_eps: float = 1e-3,
@@ -203,16 +217,27 @@ def calibrate_rel2metric_tta(
 
     x = Rel2MetricInputs(d_rel, sparse_depth, sparse_mask, rgb, device)
 
+    # Amortized (pre-TTA) prediction: proximal anchor for the off-anchor regions,
+    # so TTA corrects locally near anchors without drifting where the prior is trusted.
+    net.eval()
+    with torch.no_grad():
+        prior_pred_n = predict_pred_n(net, x)[0].detach()
+    anchor_before = float(anchor_loss(prior_pred_n, x)) if x.has_anchors else float("nan")
+
     # Per-image test-time adaptation on the sparse anchors only.
     did_tta = False
     if x.has_anchors and tta_steps > 0:
         net_tta = copy.deepcopy(net)
         opt = torch.optim.Adam(net_tta.parameters(), lr=tta_lr)
         net_tta.train()
+        off_anchor = 1.0 - x.mask_t
         for _ in range(int(tta_steps)):
             opt.zero_grad(set_to_none=True)
             pred_n, a, b = predict_pred_n(net_tta, x)
-            loss = anchor_loss(pred_n, x) + tta_smooth_lambda * field_smoothness(a, b, x)
+            loss_anchor = _trimmed_anchor_loss(pred_n, x, tta_trim_frac)
+            loss_smooth = field_smoothness(a, b, x)
+            loss_prox = (((pred_n - prior_pred_n) ** 2) * off_anchor).mean()
+            loss = loss_anchor + tta_smooth_lambda * loss_smooth + tta_prox_lambda * loss_prox
             loss.backward()
             opt.step()
         net = net_tta
@@ -221,6 +246,7 @@ def calibrate_rel2metric_tta(
     net.eval()
     with torch.no_grad():
         pred_n, _, _ = predict_pred_n(net, x)
+        anchor_after = float(anchor_loss(pred_n, x)) if x.has_anchors else float("nan")
         pred = (pred_n.squeeze() * x.m).clamp(min=0.0).cpu().numpy().astype(np.float32)
 
     if (output_refine_mode or "none").lower() == "guided" and output_refine_radius > 0:
@@ -235,5 +261,7 @@ def calibrate_rel2metric_tta(
         "metric_scale": x.m,
         "s_global": x.s_g,
         "t_global": x.t_g,
+        "anchor_loss_before": anchor_before,
+        "anchor_loss_after": anchor_after,
         "output_refine_mode": output_refine_mode,
     }
